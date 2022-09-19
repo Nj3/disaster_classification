@@ -1,9 +1,11 @@
 """Module for Text cleaning
 """
 
+import string
 import re
 import html
 from bs4 import BeautifulSoup
+import emoji
 
 
 def remove_URL(text: str, url_pattern: str) -> str:
@@ -39,7 +41,7 @@ def remove_hashtags(text: str) -> str:
 
 def decode_html(text: str) -> str:
     text = html.unescape(text)
-    cleaned_text = BeautifulSoup(text).get_text()
+    cleaned_text = BeautifulSoup(text, features="html.parser").get_text()
 
     return cleaned_text
 
@@ -172,3 +174,28 @@ def expand_contractions(text: str) -> str:
         return custom_contractions[match.group(0)]
 
     return contractions_regex_pattern.sub(replace, text)
+
+
+def remove_punctuations(text: str) -> str:
+    cleaned_text = text.translate(str.maketrans("", "", string.punctuation))
+    return cleaned_text
+
+
+def decode_emojis(text: str) -> str:
+    basic_emoticons = {
+        ":-)": "happy",
+        ":)": "happy",
+        ":D": "happy",
+        ":O": "surprised",
+        ":-(": "sad",
+        ":(": "sad",
+    }
+    for emoticon, translation in basic_emoticons.items():
+        text = text.replace(emoticon, translation)
+
+    text = emoji.demojize(text)
+    cleaned_text = text.replace(":", "")
+    return cleaned_text
+
+
+# TODO: Function for unicode char handling. there was char like \x89 which means hexcode mark u+81 in utf-8 format. https://docs.python.org/3/reference/lexical_analysis.html#encoding-declarations
