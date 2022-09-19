@@ -199,3 +199,7 @@ def decode_emojis(text: str) -> str:
 
 
 # TODO: Function for unicode char handling. there was char like \x89 which means hexcode mark u+81 in utf-8 format. https://docs.python.org/3/reference/lexical_analysis.html#encoding-declarations
+def remove_unicode(text: str) -> str:
+    text = text.encode(encoding="ascii", errors="ignore")
+    cleaned_text = text.decode()
+    return cleaned_text
